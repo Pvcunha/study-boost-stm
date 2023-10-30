@@ -2,6 +2,9 @@
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
 
+// ref
+// https://www.boost.org/doc/libs/1_82_0/libs/statechart/doc/tutorial.pdf
+
 using namespace std;
 namespace sc = boost::statechart;
 
