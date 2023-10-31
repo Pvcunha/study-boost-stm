@@ -1,11 +1,13 @@
 #include <iostream>
-#include <boost/statechart/state_machine.hpp>
-#include <boost/statechart/simple_state.hpp>
+#include "stopwatch.cpp"
+#include <time.h>
+// #include <boost/statechart/state_machine.hpp>
+// #include <boost/statechart/simple_state.hpp>
 
 // ref
 // https://www.boost.org/doc/libs/1_82_0/libs/statechart/doc/tutorial.pdf
 
-using namespace std;
+/*
 namespace sc = boost::statechart;
 
 struct Greeting;
@@ -25,4 +27,21 @@ int main() {
     basicMachine.initiate();
 
     return 0;
+}
+*/
+
+int main () {
+    StopWatch myWatch;
+    myWatch.initiate();
+    std::cout << myWatch.ElapsedTime() << "\n";
+    sleep(1);
+    myWatch.process_event( EvStartStop() );
+    std::cout << myWatch.ElapsedTime() << "\n";
+    myWatch.process_event( EvStartStop() );
+    std::cout << myWatch.ElapsedTime() << "\n";
+    myWatch.process_event( EvStartStop() );
+    std::cout << myWatch.ElapsedTime() << "\n";
+    myWatch.process_event( EvReset() );
+    std::cout << myWatch.ElapsedTime() << "\n";
+    return 0; 
 }
