@@ -1,47 +1,51 @@
 #include <iostream>
-#include "stopwatch.cpp"
-#include <time.h>
-// #include <boost/statechart/state_machine.hpp>
-// #include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/state_machine.hpp>
+#include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/event.hpp>
+#include <boost/statechart/transition.hpp>
 
-// ref
-// https://www.boost.org/doc/libs/1_82_0/libs/statechart/doc/tutorial.pdf
-
-/*
 namespace sc = boost::statechart;
 
-struct Greeting;
+struct EvCount : sc::event<EvCount> {};
 
-// os parametros dentro do <> indicam a maquina a qual pertence e 
-// para onde ela vai ao ser iniciada
-struct Machine : sc::state_machine< Machine, Greeting > { };
+struct Active;
 
-struct Greeting : sc::simple_state< Greeting, Machine > {
-    Greeting() { std::cout << "Hello World!\n";}
-    ~Greeting() {std::cout << "Goodbye World\n";}
+struct Counter : sc::state_machine< Counter, Active > {};
+
+struct Odd;
+struct Even;
+
+struct Active : sc::simple_state< Active, Counter, Even > {
+    public:
+        Active(): value(0) { std::cout << "Enters active\n"; };
+        ~Active() { std::cout << "exit Active\n"; }
+
+        int getValue() const { return value; }
+        int &getValue() { return value; }
+    private:
+        int value;
 };
 
+struct Even: sc::simple_state<Even, Active> {
+    public:
+        typedef sc::transition< EvCount, Odd >reactions;
+        Even() { std::cout << "I'm even!\n"; }
+        ~Even() { context< Active >().getValue() += 1; }
+};
+
+struct Odd: sc::simple_state< Odd, Active > {
+    public:
+        typedef sc::transition< EvCount, Even > reactions;
+        Odd() { std::cout << "I'm odd :(\n"; }
+        ~Odd() { context< Active >().getValue() += 1 ; }
+};
+
+
+
 int main() {
-    Machine basicMachine;
 
-    basicMachine.initiate();
-
+    Counter machine;
+    machine.initiate();
+    machine.process_event( EvCount() );
     return 0;
-}
-*/
-
-int main () {
-    StopWatch myWatch;
-    myWatch.initiate();
-    std::cout << myWatch.ElapsedTime() << "\n";
-    sleep(1);
-    myWatch.process_event( EvStartStop() );
-    std::cout << myWatch.ElapsedTime() << "\n";
-    myWatch.process_event( EvStartStop() );
-    std::cout << myWatch.ElapsedTime() << "\n";
-    myWatch.process_event( EvStartStop() );
-    std::cout << myWatch.ElapsedTime() << "\n";
-    myWatch.process_event( EvReset() );
-    std::cout << myWatch.ElapsedTime() << "\n";
-    return 0; 
 }
