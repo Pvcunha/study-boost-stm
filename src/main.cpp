@@ -9,17 +9,13 @@ namespace sc = boost::statechart;
 
 struct EvCount : sc::event<EvCount> {};
 
-struct Active;
-
-struct Counter : sc::state_machine< Counter, Active > {};
-
 struct notFive;
 struct isFive;
 
-struct Active : sc::simple_state< Active, Counter, notFive > {
+struct Counter : sc::state_machine< Counter, notFive > { 
     public:
-        Active(): value(0) { std::cout << "Enters active\n"; };
-        ~Active() { std::cout << "exit Active\n"; }
+        Counter(): value(0) { };
+        ~Counter() {  }
 
         int getValue() const { return value; }
         int &getValue() { return value; }
@@ -27,21 +23,21 @@ struct Active : sc::simple_state< Active, Counter, notFive > {
         int value;
 };
 
-struct notFive: sc::simple_state<notFive, Active> {
+struct notFive: sc::simple_state< notFive, Counter > {
     public:
         typedef sc::custom_reaction< EvCount > reactions;
         notFive() { std::cout << "I'm not five!\n"; }
-        ~notFive() { context< Active >().getValue() += 1; }
+        ~notFive() { context< Counter >().getValue() += 1; }
 
         sc::result react( const EvCount& ) { 
-            if(context< Active >().getValue() == 5)
+            if(context< Counter >().getValue() == 5)
                 return transit< isFive >(); 
             else 
                 return transit< notFive >();
         }
 };
 
-struct isFive: sc::simple_state< isFive, Active > {
+struct isFive: sc::simple_state< isFive, Counter > {
     public:
         typedef sc::custom_reaction< EvCount > reactions;
         isFive() { std::cout << "I'm five :)\n"; }
