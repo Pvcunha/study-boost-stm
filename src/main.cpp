@@ -4,17 +4,20 @@
 #include <boost/statechart/event.hpp>
 #include <boost/statechart/transition.hpp>
 #include <boost/statechart/custom_reaction.hpp>
+#include <boost/statechart/state.hpp>
+
 
 namespace sc = boost::statechart;
 
 struct EvCount : sc::event<EvCount> {};
+struct EvCount2 : sc::event< EvCount2 > {};
 
 struct notFive;
 struct isFive;
 
 struct Counter : sc::state_machine< Counter, notFive > { 
     public:
-        Counter(): value(0) { };
+        Counter(): value(1) { };
         ~Counter() {  }
 
         int getValue() const { return value; }
@@ -23,10 +26,11 @@ struct Counter : sc::state_machine< Counter, notFive > {
         int value;
 };
 
-struct notFive: sc::simple_state< notFive, Counter > {
+struct notFive: sc::state< notFive, Counter > {
     public:
         typedef sc::custom_reaction< EvCount > reactions;
-        notFive() { std::cout << "I'm not five!\n"; }
+
+        notFive( my_context ctx ) : my_base(ctx) { std::cout << "I'm not five!\n"; post_event( EvCount() ); }
         ~notFive() { context< Counter >().getValue() += 1; }
 
         sc::result react( const EvCount& ) { 
@@ -37,13 +41,13 @@ struct notFive: sc::simple_state< notFive, Counter > {
         }
 };
 
-struct isFive: sc::simple_state< isFive, Counter > {
+struct isFive: sc::state< isFive, Counter > {
     public:
         typedef sc::custom_reaction< EvCount > reactions;
-        isFive() { std::cout << "I'm five :)\n"; }
+        isFive( my_context ctx ) : my_base(ctx) { std::cout << "I'm five :)\n"; }
         ~isFive() {  }
 
-        sc::result react( const EvCount& ) { return transit< isFive >(); }
+        sc::result react( const EvCount& ) { return transit< isFive >(); post_event( EvCount() ); }
 };
 
 
@@ -52,11 +56,11 @@ int main() {
 
     Counter machine;
     machine.initiate();
-    machine.process_event( EvCount() );
-    machine.process_event( EvCount() );
-    machine.process_event( EvCount() );
-    machine.process_event( EvCount() );
-    machine.process_event( EvCount() );
-    machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
+    // machine.process_event( EvCount() );
     return 0;
 }
